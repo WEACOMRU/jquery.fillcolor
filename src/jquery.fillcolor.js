@@ -99,29 +99,31 @@
                 $image = $('img', $fillRect).eq(0);
 
             if ($image.length) {
-                var w = $image.width(),
-                    h = $image.height(),
-                    canvas = document.createElement('canvas'),
-                    context = canvas.getContext('2d'),
-                    imageData;
+                $image.on('load', function () {
+                    var w = $image.width(),
+                        h = $image.height(),
+                        canvas = document.createElement('canvas'),
+                        context = canvas.getContext('2d'),
+                        imageData;
 
-                context.fillStyle = 'rgb(255, 255, 255)';
-                context.fillRect(0, 0, w, h);
-                context.drawImage($image[0], 0, 0, w, h);
+                    context.fillStyle = 'rgb(255, 255, 255)';
+                    context.fillRect(0, 0, w, h);
+                    context.drawImage($image[0], 0, 0, w, h);
 
-                try {
-                    imageData = context.getImageData(0, 0, w, h);
-                } catch (e) {
-                    // security error, img on diff domain
-                    if (settings.debug) {
-                        console.log('Cross-domain error');
+                    try {
+                        imageData = context.getImageData(0, 0, w, h);
+                    } catch (e) {
+                        // security error, img on diff domain
+                        if (settings.debug) {
+                            console.log('Cross-domain error');
+                        }
+                        return;
                     }
-                    return;
-                }
 
-                var rgb = getColor[settings.type](imageData);
+                    var rgb = getColor[settings.type](imageData);
 
-                $fillRect.css('background-color', 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')');
+                    $fillRect.css('background-color', 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')');
+                });
             }
         });
     };
