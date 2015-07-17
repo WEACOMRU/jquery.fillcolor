@@ -9,22 +9,24 @@
  *
  * https://github.com/bashkos/jquery.fillcolor
  *
- * Version: 1.0.0
+ * Version: 1.0.2
  */
 
 (function ($) {
     'use strict';
 
-    var getColor = {
+    var
+        getColor = {
             avg: function (imageData) {
                 var rgb = {
                         r: 0,
                         g: 0,
                         b: 0
                     },
-                    count = 0;
+                    count = 0,
+                    step = 4;
 
-                for (var i = 0; i < imageData.data.length; i += 4) {
+                for (var i = 0; i < imageData.data.length; i += step) {
                     if (imageData.data[i] !== 255 || imageData.data[i + 1] !== 255 || imageData.data[i + 2] !== 255) {
                         rgb.r += imageData.data[i];
                         rgb.g += imageData.data[i + 1];
@@ -53,12 +55,13 @@
                         v: 0
                     },
                     count = 0,
+                    step = 4,
 
                     sigma = function (x) {
                         return x / (Math.abs(x) + 0.4);
                     };
 
-                for (var i = 0; i < imageData.data.length; i += 4) {
+                for (var i = 0; i < imageData.data.length; i += step) {
                     if (imageData.data[i] !== 255 || imageData.data[i + 1] !== 255 || imageData.data[i + 2] !== 255) {
                         rgb.r = imageData.data[i] / 255;
                         rgb.g = imageData.data[i + 1] / 255;
@@ -89,9 +92,9 @@
         };
 
     $.fn.fillColor = function (options) {
-        var settings = $.extend({
-                type: 'avg',
-                debug: false
+        var $body = $('body'),
+            settings = $.extend({
+                type: 'avg'
             }, options);
 
         return this.each(function () {
@@ -99,31 +102,39 @@
                 $image = $('img', $fillRect).eq(0);
 
             if ($image.length) {
-                $image.on('load', function () {
-                    var w = $image.width(),
-                        h = $image.height(),
-                        canvas = document.createElement('canvas'),
-                        context = canvas.getContext('2d'),
-                        imageData;
+                $('<img/>')
+                    .load(function () {
+                        var $shadowImage = $(this),
+                            w, h;
 
-                    context.fillStyle = 'rgb(255, 255, 255)';
-                    context.fillRect(0, 0, w, h);
-                    context.drawImage($image[0], 0, 0, w, h);
+                        $body.append($shadowImage);
 
-                    try {
-                        imageData = context.getImageData(0, 0, w, h);
-                    } catch (e) {
-                        // security error, img on diff domain
-                        if (settings.debug) {
-                            console.log('Cross-domain error');
+                        w = $shadowImage.width();
+                        h = $shadowImage.height();
+
+                        if (w > 0 && h > 0) {
+                            var canvas = document.createElement('canvas'),
+                                context = canvas.getContext('2d'),
+                                imageData,
+                                rgb;
+
+                            context.fillStyle = 'rgb(255, 255, 255)';
+                            context.fillRect(0, 0, w, h);
+                            context.drawImage($shadowImage[0], 0, 0, w, h);
+                            $shadowImage.remove();
+
+                            try {
+                                imageData = context.getImageData(0, 0, w, h);
+                                rgb = getColor[settings.type](imageData);
+                                $fillRect.css('background-color', 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')');
+                            } catch (e) {
+                                $.error(e.message + '(jQuery.fillcolor)');
+                            }
+                        } else {
+                            $shadowImage.remove();
                         }
-                        return;
-                    }
-
-                    var rgb = getColor[settings.type](imageData);
-
-                    $fillRect.css('background-color', 'rgb(' + rgb.r + ', ' + rgb.g + ', ' + rgb.b + ')');
-                });
+                    })
+                    .attr('src', $image.attr('src'));
             }
         });
     };
