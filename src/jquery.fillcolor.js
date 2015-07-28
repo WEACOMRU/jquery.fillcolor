@@ -103,7 +103,7 @@
 
             if ($image.length) {
                 $('<img/>')
-                    .load(function () {
+                    .on('load', function () {
                         var $shadowImage = $(this),
                             w, h;
 
