@@ -99,15 +99,13 @@
 
         return this.each(function () {
             var $fillRect = $(this),
-                $image = $('img', $fillRect).eq(0);
+                $image = $('img', $fillRect).eq(0),
+                $shadowImage = $('<img/>');
 
             if ($image.length) {
-                $('<img/>')
-                    .on('load', function () {
-                        var $shadowImage = $(this),
-                            w, h;
-
-                        $body.append($shadowImage);
+                $shadowImage
+                    .on('load cached', function () {
+                        var w, h;
 
                         w = $shadowImage.width();
                         h = $shadowImage.height();
@@ -134,7 +132,12 @@
                             $shadowImage.remove();
                         }
                     })
+                    .on('abort error', function () {
+                        $shadowImage.remove();
+                    })
                     .attr('src', $image.attr('src'));
+
+                $body.append($shadowImage);
             }
         });
     };
