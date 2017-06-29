@@ -14,4 +14,4 @@ $('.j_fillcolor').fillColor({ type: 'avgYUV' });
 ```
 
 ## Альтернатива
-[npm i get-average-color](https://github.com/bashkos/get-average-color)
+[get-average-color](https://github.com/bashkos/get-average-color)
