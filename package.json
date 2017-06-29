@@ -1,8 +1,34 @@
 {
-    "name": "jquery.fillcolor",
-    "version": "1.0.3",
-    "devDependencies": {
-        "grunt": "~0.4.5",
-        "grunt-contrib-uglify": "~0.9.1"
-    }
+  "name": "jquery.fillcolor",
+  "version": "1.1.0",
+  "scripts": {
+    "clean": "rimraf build",
+    "build": "npm run clean && npm run build:grunt",
+    "build:grunt": "grunt build",
+    "start": "opn $(pwd)/demo/demo.html"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/WEACOMRU/jquery.fillcolor.git"
+  },
+  "keywords": [
+    "jquery",
+    "image",
+    "color",
+    "palette",
+    "dominant",
+    "average"
+  ],
+  "author": "bashkos <bashkos@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/WEACOMRU/jquery.fillcolor/issues"
+  },
+  "homepage": "https://github.com/WEACOMRU/jquery.fillcolor#readme",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-uglify": "^3.0.1",
+    "opn-cli": "^3.1.0",
+    "rimraf": "^2.6.1"
+  }
 }
